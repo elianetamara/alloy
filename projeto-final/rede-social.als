@@ -43,12 +43,12 @@ fact "usuarios inativos sem amizades"{
   all u1: Usuario | boolean/isFalse[u1.ativo] implies some u2: Usuario | semAmizades[u1, u2]
 }
 
-/*
-se um usuário está inativo, podemos considerar 
-todos os seus perfis como inativos
-*/
+//se um usuário está inativo, podemos considerar todos os seus perfis como inativos
 fact "usuarios inativos com perfis inativos"{
-  all u:Usuario, p:Perfil | boolean/isFalse[u.ativo] implies u in p.dono implies boolean/False in p.ativo
+  // dando errado
+  all u:Usuario | boolean/isFalse[u.ativo] 
+  <=> 
+  all p:Perfil | u in p.dono implies boolean/False in p.ativo
 }
 
 // postagens devem estar associadas a perfis ativos
@@ -56,23 +56,12 @@ fact "postagens relacionadas a perfis ativos"{
   all p:Perfil, p1:Publicacao | p in p1.autores implies boolean/True in p.ativo 
 }
 
-/*
-usuário pode publicar conteúdo de texto 
-em seu perfil ou nos perfis de seus amigos.
-*/
+//usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
 fact "usuario tem acesso a publicar texto em perfil de amigos"{
-  /*
-se p1 e p2 estao em autores de publicacao, p1 e p2 sao amigos ativos
-
-fun inferiores[r: Recurso]: set Recurso{
-    {r1: Recurso | r in r1.^superior}
+//se p1 e p2 estao em autores de publicacao, p1 e p2 sao amigos ativos
 }
 
-fact "usuario acessa hierarquia"{
-    all u: Usuario, r:Recurso | r in u.acessa implies inferiores[r] in u.acessa  
-}
-*/
-}
+// usuarios tem varios perfis, mas perfil tem um dono
 
 
 run{} for 3
