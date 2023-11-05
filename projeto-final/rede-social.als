@@ -2,58 +2,81 @@ open util/boolean
 
 one sig RedeSocial{
   usuarios: set Usuario,
-  perfis: set Perfil
+  contas: set Perfil
 }
 
 sig Publicacao{
-  usuario: lone Usuario
+  autores: set Perfil
 }
 
 sig Perfil{
-  ativo: Bool,
+  ativo: one Bool,
   dono: one Usuario,
   publicacoes: set Publicacao
 }
 
 sig Usuario{
-  ativo: Bool,
+  ativo: one Bool,
   amizadesAtivas: set Usuario,
   amizadesInativas: set Usuario,
   perfis: some Perfil
 }
 
+pred restringeAmizade[u: Usuario]{
+  u not in u.^amizadesAtivas and u not in u.^amizadesInativas
+}
+
 fact "amizades diferente de si mesmo"{
-    all u: Usuario | u not in u.^amizadesAtivas
-    all u: Usuario | u not in u.^amizadesInativas
+    all u: Usuario | restringeAmizade[u]
+}
+
+fact "usuarios e perfil dentro de RedeSocial"{
+  all u:Usuario, p:Perfil, r:RedeSocial | u in r.usuarios and p in r.contas 
+}
+
+// usuários inativos não possuem amizades
+pred semAmizades[u1:Usuario, u2:Usuario]{
+  (!(u2 in u1.amizadesAtivas) and !(u1 in u2.amizadesAtivas))
 }
 
 fact "usuarios inativos sem amizades"{
-  //all u:Usuario | boolean/isFalse[u.ativo] implies u.amizadesAtivas
+  all u1: Usuario | boolean/isFalse[u1.ativo] implies some u2: Usuario | semAmizades[u1, u2]
 }
-
-fact "usuarios inativos com perfis inativos"{
-  all u:Usuario | boolean/isFalse[u.ativo] implies all p:Perfil | u in p.dono implies boolean/False in p.ativo
-}
-
-fact "usuario tem acesso a publicar texto em perfil de amigos"{}
 
 /*
+se um usuário está inativo, podemos considerar 
+todos os seus perfis como inativos
+*/
+fact "usuarios inativos com perfis inativos"{
+  all u:Usuario, p:Perfil | boolean/isFalse[u.ativo] implies u in p.dono implies boolean/False in p.ativo
+}
+
+// postagens devem estar associadas a perfis ativos
+pred restringePostagens[p:Publicacao]{
+  
+}
+
+fact "postagens relacionadas a perfis ativos"{
+  all p:Publicacao | restringePostagens[p]
+}
+
+/*
+usuário pode publicar conteúdo de texto 
+em seu perfil ou nos perfis de seus amigos.
+*/
+fact "usuario tem acesso a publicar texto em perfil de amigos"{
+  /*
+se p1 e p2 estao em autores de publicacao, p1 e p2 sao amigos ativos
+
+fun inferiores[r: Recurso]: set Recurso{
+    {r1: Recurso | r in r1.^superior}
+}
+
 fact "usuario acessa hierarquia"{
     all u: Usuario, r:Recurso | r in u.acessa implies inferiores[r] in u.acessa  
 }
 */
+}
 
 
 run{} for 2
-
-/*
-e um usuário está inativo, podemos considerar 
-todos os seus perfis como inativos
-
-usuários inativos não possuem amizades
-
-Um usuário pode publicar conteúdo de texto 
-em seu perfil ou nos perfis de seus amigos.
-
- as postagens devem estar associadas a usuários ativos
-*/
