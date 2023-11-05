@@ -52,12 +52,8 @@ fact "usuarios inativos com perfis inativos"{
 }
 
 // postagens devem estar associadas a perfis ativos
-pred restringePostagens[p:Publicacao]{
-  
-}
-
 fact "postagens relacionadas a perfis ativos"{
-  all p:Publicacao | restringePostagens[p]
+  all p:Perfil, p1:Publicacao | p in p1.autores implies boolean/True in p.ativo 
 }
 
 /*
@@ -79,4 +75,4 @@ fact "usuario acessa hierarquia"{
 }
 
 
-run{} for 2
+run{} for 3
