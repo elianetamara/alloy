@@ -10,20 +10,20 @@ sig Publicacao{
 }
 
 sig Perfil{
-  ativo: one Bool,
+  status_perfil: one Bool,
   dono: one Usuario,
   publicacoes: set Publicacao,
 }
 
 sig Usuario{
-  ativo: one Bool,
-  amizadesAtivas: set Usuario,
-  amizadesInativas: set Usuario,
+  status_usuario: one Bool,
+  amizades_ativas: set Usuario,
+  amizades_inativas: set Usuario,
   perfis: some Perfil
 }
 
 pred restringeAmizade[u: Usuario]{
-  u not in u.^amizadesAtivas and u not in u.^amizadesInativas
+  u not in u.^amizades_ativas and u not in u.^amizades_inativas
 }
 
 fact "amizades diferente de si mesmo"{
@@ -35,7 +35,7 @@ fact "usuarios e perfil dentro de RedeSocial"{
 }
 
 pred restringeUsuarioAtivo[u: Usuario]{
-  u.ativo = boolean/True or u.ativo = boolean/False
+  u.status_usuario = boolean/True or u.status_usuario = boolean/False
 }
 
 fact "usuario ativo ou inativo"{
@@ -43,7 +43,7 @@ fact "usuario ativo ou inativo"{
 }
 
 pred restringePerfilAtivo[p: Perfil]{
-  p.ativo = boolean/True or p.ativo = boolean/False
+  p.status_perfil = boolean/True or p.status_perfil = boolean/False
 }
 
 fact "perfil ativo ou inativo"{
@@ -51,20 +51,20 @@ fact "perfil ativo ou inativo"{
 }
 
 fact "usuarios inativos sem amizades"{
-  all u1: Usuario | boolean/isFalse[u1.ativo] implies no u1.amizadesAtivas
+  all u1: Usuario | boolean/isFalse[u1.status_usuario] implies no u1.amizades_ativas
 }
 
 fact "usuarios inativos com perfis inativos"{
-  all u: Usuario | u.ativo = boolean/False implies all p: Perfil | p.dono = u and p.ativo = boolean/False
+  all u: Usuario | u.status_usuario = boolean/False implies all p: Perfil | p.dono = u and p.status_perfil = boolean/False
 }
 
 fact "postagens relacionadas a perfis ativos"{
-  all p1:Publicacao |  one p: Perfil | p1 in p.publicacoes and p.ativo = boolean/True
+  all p1:Publicacao |  one p: Perfil | p1 in p.publicacoes and p.status_perfil = boolean/True
 }
 
 fact "usuario tem acesso a publicar texto em perfil de amigos"{
 //usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
-  //all u1:Usuario, u2:Usuario | u1 in u2.amizadesAtivas implies u2.perfis.publicacoes in u1.perfis.publica 
+  //all u1:Usuario, u2:Usuario | u1 in u2.amizades_ativas implies u2.perfis.publicacoes in u1.perfis.publica 
 }
 
 fact "perfil tem apenas um dono"{
@@ -80,6 +80,9 @@ pred restringeTipoAmizade[u1: Usuario, u2: Usuario]{
 
 fact "usuarios tem amizade ativa ou inativa"{
   all u1: Usuario, u2: Usuario | restringeTipoAmizade[u1, u2] 
+  all u1, u2: Usuario | u1 in u2.amizades_ativas implies u2 in u1.amizades_ativas
+  all u1, u2: Usuario | u1 in u2.amizades_inativas implies u2 in u1.amizades_inativas
+  all u1, u2: Usuario | u1 in u2.amizades_ativas implies u1 not in u2.amizades_inativas
 }
 */
 
