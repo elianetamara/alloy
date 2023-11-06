@@ -13,7 +13,6 @@ sig Perfil{
   ativo: one Bool,
   dono: one Usuario,
   publicacoes: set Publicacao,
-  publica: set Publicacao
 }
 
 sig Usuario{
@@ -35,35 +34,73 @@ fact "usuarios e perfil dentro de RedeSocial"{
   all u:Usuario, p:Perfil, r:RedeSocial | u in r.usuarios and p in r.contas 
 }
 
-// usuários inativos não possuem amizades
-pred semAmizades[u1:Usuario, u2:Usuario]{
-  (!(u2 in u1.amizadesAtivas) and !(u1 in u2.amizadesAtivas))
+pred restringeUsuarioAtivo[u: Usuario]{
+  u.ativo = boolean/True or u.ativo = boolean/False
+}
+
+fact "usuario ativo ou inativo"{
+  all u: Usuario | restringeUsuarioAtivo[u]
+}
+
+pred restringePerfilAtivo[p: Perfil]{
+  p.ativo = boolean/True or p.ativo = boolean/False
+}
+
+fact "perfil ativo ou inativo"{
+  all p: Perfil | restringePerfilAtivo[p]
 }
 
 fact "usuarios inativos sem amizades"{
-  all u1: Usuario | boolean/isFalse[u1.ativo] implies some u2: Usuario | semAmizades[u1, u2]
+  all u1: Usuario | boolean/isFalse[u1.ativo] implies no u1.amizadesAtivas
 }
 
-//se um usuário está inativo, podemos considerar todos os seus perfis como inativos
 fact "usuarios inativos com perfis inativos"{
-  // dando errado
-  all u:Usuario | boolean/isFalse[u.ativo] 
-  <=> 
-  all p:Perfil | u in p.dono implies boolean/False in p.ativo
+  all u: Usuario | u.ativo = boolean/False implies all p: Perfil | p.dono = u and p.ativo = boolean/False
 }
 
-// postagens devem estar associadas a perfis ativos
 fact "postagens relacionadas a perfis ativos"{
-  all p:Perfil, p1:Publicacao | p in p1.autores implies boolean/True in p.ativo 
+  all p1:Publicacao |  one p: Perfil | p1 in p.publicacoes and p.ativo = boolean/True
 }
 
-//usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
 fact "usuario tem acesso a publicar texto em perfil de amigos"{
-//se p1 e p2 estao em autores de publicacao, p1 e p2 sao amigos ativos
-  all u1:Usuario, u2:Usuario | u1 in u2.amizadesAtivas implies u2.perfis.publicacoes in u1.perfis.publica 
+//usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
+  //all u1:Usuario, u2:Usuario | u1 in u2.amizadesAtivas implies u2.perfis.publicacoes in u1.perfis.publica 
 }
 
-// usuarios tem varios perfis, mas perfil tem um dono
+fact "perfil tem apenas um dono"{
+  all p:Perfil | one u:Usuario | u in p.dono and p in u.perfis
+}
 
+pred restringeTipoAmizade[u1: Usuario, u2: Usuario]{
+  u1 in u2.amizadesAtivas or u1 in u2.amizadesInativas
+}
+
+fact "usuarios tem amizade ativa ou inativa"{
+  all u1: Usuario, u2: Usuario | restringeTipoAmizade[u1, u2] 
+}
 
 run{} for 3
+
+check usuariosInativosSemAmizades {
+}
+
+check usuarioNaoAmigoDeSiMesmo {
+}
+
+check postagensEmPerfisAtivos {
+}
+
+check perfilAtivoOuInativo {
+}
+
+check usuarioAtivoOuInativo {
+}
+
+check usuariosComUmTipoAmizade {
+}
+
+check perfilComUmDono {
+}
+
+check usuarioPublicaEmPerfilAmigos {
+}
