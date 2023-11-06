@@ -23,7 +23,7 @@ sig Usuario{
 }
 
 pred restringeAmizade[u: Usuario]{
-  u not in u.^amizades_ativas and u not in u.^amizades_inativas
+  u not in u.amizades_ativas and u not in u.amizades_inativas
 }
 
 fact "amizades diferente de si mesmo"{
@@ -71,7 +71,7 @@ fact "perfil tem apenas um dono"{
   all p:Perfil | one u:Usuario | u in p.dono and p in u.perfis
 }
 
-fact "usuarios tem amizade ativa ou inativa"{
+fact "amizade nao pode ser ativa e inativa ao mesmo tempo"{
   all u1, u2: Usuario | u1 in u2.amizades_ativas implies u2 in u1.amizades_ativas
   all u1, u2: Usuario | u1 in u2.amizades_inativas implies u2 in u1.amizades_inativas
   all u1, u2: Usuario | u1 in u2.amizades_ativas implies u1 not in u2.amizades_inativas
