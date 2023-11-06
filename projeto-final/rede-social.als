@@ -71,22 +71,13 @@ fact "perfil tem apenas um dono"{
   all p:Perfil | one u:Usuario | u in p.dono and p in u.perfis
 }
 
-/*
-pred restringeTipoAmizade[u1: Usuario, u2: Usuario]{
-  (u1 in u2.amizadesAtivas and u1 not in u2.amizadesInativas)
-  and
-  (u2 in u1.amizadesAtivas and u2 not in u1.amizadesInativas)
-}
-
 fact "usuarios tem amizade ativa ou inativa"{
-  all u1: Usuario, u2: Usuario | restringeTipoAmizade[u1, u2] 
   all u1, u2: Usuario | u1 in u2.amizades_ativas implies u2 in u1.amizades_ativas
   all u1, u2: Usuario | u1 in u2.amizades_inativas implies u2 in u1.amizades_inativas
   all u1, u2: Usuario | u1 in u2.amizades_ativas implies u1 not in u2.amizades_inativas
 }
-*/
 
-run{} for 3
+run {} for 3 but exactly 3 Usuario
 
 check usuariosInativosSemAmizades {
 }
