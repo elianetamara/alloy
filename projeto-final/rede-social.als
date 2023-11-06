@@ -6,7 +6,7 @@ one sig RedeSocial{
 }
 
 sig Publicacao{
-  autores: set Perfil
+  autores: one Perfil
 }
 
 sig Perfil{
@@ -19,7 +19,7 @@ sig Usuario{
   status_usuario: one Bool,
   amizades_ativas: set Usuario,
   amizades_inativas: set Usuario,
-  perfis: some Perfil
+  // perfis: some Perfil
 }
 
 pred restringeAmizade[u: Usuario]{
@@ -65,10 +65,6 @@ fact "postagens relacionadas a perfis ativos"{
 fact "usuario tem acesso a publicar texto em perfil de amigos"{
 //usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
   //all u1:Usuario, u2:Usuario | u1 in u2.amizades_ativas implies u2.perfis.publicacoes in u1.perfis.publica 
-}
-
-fact "perfil tem apenas um dono"{
-  all p:Perfil | one u:Usuario | u in p.dono and p in u.perfis
 }
 
 fact "amizade nao pode ser ativa e inativa ao mesmo tempo"{
