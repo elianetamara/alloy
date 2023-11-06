@@ -80,24 +80,32 @@ fact "amizade nao pode ser ativa e inativa ao mesmo tempo"{
 run {} for 3 but exactly 3 Usuario
 
 check usuariosInativosSemAmizades {
+  all u: Usuario | u.status_usuario = boolean/False implies no u.amizades_ativas
 }
 
 check usuarioNaoAmigoDeSiMesmo {
+  all u: Usuario | restringeAmizade[u]
 }
 
 check postagensEmPerfisAtivos {
 }
 
 check perfilAtivoOuInativo {
+  all p: Perfil | restringePerfilAtivo[p]
 }
 
 check usuarioAtivoOuInativo {
+  all u: Usuario | restringeUsuarioAtivo[u]
 }
 
 check usuariosComUmTipoAmizade {
+  all u1, u2: Usuario | u1 in u2.amizades_ativas implies u2 in u1.amizades_ativas
+  all u1, u2: Usuario | u1 in u2.amizades_inativas implies u2 in u1.amizades_inativas
+  all u1, u2: Usuario | u1 in u2.amizades_ativas implies u1 not in u2.amizades_inativas
 }
 
 check perfilComUmDono {
+
 }
 
 check usuarioPublicaEmPerfilAmigos {
