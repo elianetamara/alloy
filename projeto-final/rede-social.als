@@ -88,6 +88,7 @@ check usuarioNaoAmigoDeSiMesmo {
 }
 
 check postagensEmPerfisAtivos {
+  // all p1: Publicacao | p1 in p1.autores.publicacoes and p1.autores.status_perfil = boolean/True
 }
 
 check perfilAtivoOuInativo {
@@ -105,8 +106,9 @@ check usuariosComUmTipoAmizade {
 }
 
 check perfilComUmDono {
-
+  all p: Perfil | one p.dono
 }
 
 check usuarioPublicaEmPerfilAmigos {
+  // all u1: Usuario, u2: Usuario | u1 in u2.amizades_ativas implies (all p: Perfil | p in u2.perfis implies p in u1.perfis)
 }
