@@ -12,7 +12,8 @@ sig Publicacao{
 sig Perfil{
   ativo: one Bool,
   dono: one Usuario,
-  publicacoes: set Publicacao
+  publicacoes: set Publicacao,
+  publica: set Publicacao
 }
 
 sig Usuario{
@@ -59,6 +60,7 @@ fact "postagens relacionadas a perfis ativos"{
 //usuário pode publicar conteúdo de texto em seu perfil ou nos perfis de seus amigos.
 fact "usuario tem acesso a publicar texto em perfil de amigos"{
 //se p1 e p2 estao em autores de publicacao, p1 e p2 sao amigos ativos
+  all u1:Usuario, u2:Usuario | u1 in u2.amizadesAtivas implies u2.perfis.publicacoes in u1.perfis.publica 
 }
 
 // usuarios tem varios perfis, mas perfil tem um dono
